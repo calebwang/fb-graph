@@ -3,7 +3,7 @@ from networkx import bipartite as bp
 import facebook
 import matplotlib.pyplot as plt
 
-auth = 'AAAAAAITEghMBAAAeONjOrPvCKg1ePiZCwEV4fo2cuNC9fSEy3ZA9tA7ZCADRpBXt8bpWu9tsd7PFKLKFNUDQi9sgZCZCVhyFCNWYZBZABnjZApPIbmR8xV9f'
+auth ='AAAAAAITEghMBAHzA8SKFoeYcMeMQDohpqiKmkT1fqMVRy91iSZAtpXrHM8WZCiWyeegZA0A0wML6XNkRaZA7X7fqGo2tLWhv4T90C4hFnWaPVMchjErZA' 
 #lol no actual facebook authentication
 #lol python comments look like hashtags
 
@@ -42,7 +42,8 @@ def add_likes(friends):
             bp_graph.add_edge(f.name, l.name)
 
 def get_friend_graph(bp_graph):
-    pass
+    pages = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==1)
+    people = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==0)
 
 class Page:
 
@@ -51,6 +52,7 @@ class Page:
         self.uid = uid
 
 class Friend:
+
     def __init__(self, uid, name):
         self.name = name
         self.uid = uid
@@ -64,14 +66,12 @@ class Friend:
         
 if __name__ == '__main__':
     data = get_friends()
-    print data
+    print [line for line in data]
     friends = make_friends(data)
     add_friend_nodes(friends)
     add_likes(friends)
     bp.color(bp_graph)
-    people = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==0)
-    graph = bp.projected_graph(bp_graph, people)
-    print bp_graph.edges()
+    print [edge for edge in bp_graph.edges()]
     print '\n'
     print bp.clustering(bp_graph)
     nx.draw(bp_graph)
