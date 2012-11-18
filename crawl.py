@@ -37,7 +37,7 @@ def get_friends():
 def make_friends(data):
     """I'm pretty sure I think this is way funnier than it should be"""
     friends = []
-    for friend in data[0:20]:
+    for friend in data[0:50]:
         uid, name = friend['id'], friend['name'] 
         friends.append(Friend(uid, name))
     return friends
@@ -112,5 +112,6 @@ if __name__ == '__main__':
     #bp.color(bp_graph)
     get_friend_graph(bp_graph)
     nx.draw_random(friend_graph)
-    print sorted(friend_graph.edges(data=True), key= lambda x: x[2].get('weight', 1))
+    for edge in sorted(friend_graph.edges(data=True), key= lambda x: -1*x[2].get('weight', 1)):
+        print edge
     plt.show()
