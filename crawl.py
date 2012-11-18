@@ -64,7 +64,7 @@ def get_friend_graph(bp_graph):
     pages = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==1)
     people = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==0)
     for page in pages:
-        fans = nx.all_neighbors(bp_graph, page)
+        fans = bp_graph.neighbors(page)
         for fan1 in fans:
             for fan2 in fans:
                 join_friends(friend_graph, f1, f2)
