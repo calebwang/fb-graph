@@ -1,15 +1,34 @@
 import networkx as nx
+import urllib2
+import json
 from networkx import bipartite as bp
 import facebook
 import matplotlib.pyplot as plt
 
-auth ='AAAAAAITEghMBAHzA8SKFoeYcMeMQDohpqiKmkT1fqMVRy91iSZAtpXrHM8WZCiWyeegZA0A0wML6XNkRaZA7X7fqGo2tLWhv4T90C4hFnWaPVMchjErZA' 
+base_url = 'https://graph.facebook.com/'
+auth = 'AAAAAITEghMBAGDbrRZBguFf4gEMFyZBahdqdXFVQo0I7XOXkmwCocd2hU1Yx6MoToFfHPqM7heVZAYGnefKFtXLj4hqnN4Hcj7wVOtgs2UDWC3FOwZB'
+friends_url = base_url + 'me/friends?access_token=' + auth
 #lol no actual facebook authentication
 #lol python comments look like hashtags
+
+class FBGraph:
+    def __init__(self):
+        self.g = facebook.GraphAPI(auth)
+        self.friend_graph = nx.Graph()
+        self.bp_graph = nx.Graph() #bipartite friend/likes?
 
 g = facebook.GraphAPI(auth)
 friend_graph = nx.Graph()
 bp_graph = nx.Graph() #bipartite friend/likes?
+
+def music_url(uid):
+    return base_url + uid + '/music?access_token=' + auth  
+
+def get_friends_urllib():
+    print friends_url
+    page = urllib2.urlopen(friends_url).read()
+    data = json.loads(page)['data']
+    return data
 
 def get_friends():
     data = g.get_connections('me', 'friends')['data']
@@ -44,6 +63,18 @@ def add_likes(friends):
 def get_friend_graph(bp_graph):
     pages = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==1)
     people = set(f for f,d in bp_graph.nodes(data=True) if d['bipartite']==0)
+    for page in pages:
+        fans = nx.all_neighbors(bp_graph, page)
+        for fan1 in fans:
+            for fan2 in fans:
+                join_friends(friend_graph, f1, f2)
+    return friend_graph
+                   
+def join_friends(friend_graph, f1, f2):
+    if not f1.equals(f2):
+        if not friend_graph.has_edge(f1, f2):
+            friend_graph.add_edge(f1, f2, weight = 0) 
+        friend_graph[f1][f2]['weight'] += 1
 
 class Page:
 
@@ -63,6 +94,13 @@ class Friend:
         for l in likes:
             self.likes.append(Page(l['id'], l['name']))
         return self.likes
+ 
+    def get_likes_urllib(self):
+        page = urllib2.urlopen(music_url(self.uid)).read()
+        likes = page['data']
+        for l in likes:
+            self.likes.append(Page(l['id'], l['name']))
+        return self.likes
         
 if __name__ == '__main__':
     data = get_friends()
@@ -71,8 +109,6 @@ if __name__ == '__main__':
     add_friend_nodes(friends)
     add_likes(friends)
     bp.color(bp_graph)
-    print [edge for edge in bp_graph.edges()]
-    print '\n'
-    print bp.clustering(bp_graph)
-    nx.draw(bp_graph)
+    get_friend_graph(bp_graph)
+    nx.draw(friend_graph)
     plt.show()
