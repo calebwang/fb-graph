@@ -6,7 +6,7 @@ import facebook
 import matplotlib.pyplot as plt
 
 base_url = 'https://graph.facebook.com/'
-auth = 'AAAAAITEghMBAGDbrRZBguFf4gEMFyZBahdqdXFVQo0I7XOXkmwCocd2hU1Yx6MoToFfHPqM7heVZAYGnefKFtXLj4hqnN4Hcj7wVOtgs2UDWC3FOwZB'
+auth = 'AAAAAAITEghMBAMOz611fkWJhOTgqRmU0Xx1LbWGIyJmFCsFFmfgtTf8g38RGlYaWihMZBUshRvD4PY79eCJ0q1Nu5Fq5Wgx9IMlDIP3a0IKqZCnMSv'
 friends_url = base_url + 'me/friends?access_token=' + auth
 #lol no actual facebook authentication
 #lol python comments look like hashtags
@@ -37,7 +37,7 @@ def get_friends():
 def make_friends(data):
     """I'm pretty sure I think this is way funnier than it should be"""
     friends = []
-    for friend in data[0:40]:
+    for friend in data[0:20]:
         uid, name = friend['id'], friend['name'] 
         friends.append(Friend(uid, name))
     return friends
@@ -53,8 +53,8 @@ def add_likes(friends):
         print f.name
         likes = f.get_likes() 
         print [l.name for l in likes]
-        if len(likes) == 0:
-            bp_graph.remove_node(f.name)
+        #if len(likes) == 0:
+        #    bp_graph.remove_node(f.name)
         for l in likes:
             if not bp_graph.has_node(l.name):
                 bp_graph.add_node(l.name, uid = l.uid, bipartite = 1)
@@ -67,11 +67,11 @@ def get_friend_graph(bp_graph):
         fans = bp_graph.neighbors(page)
         for fan1 in fans:
             for fan2 in fans:
-                join_friends(friend_graph, f1, f2)
+                join_friends(friend_graph, fan1, fan2)
     return friend_graph
                    
 def join_friends(friend_graph, f1, f2):
-    if not f1.equals(f2):
+    if f1 != f2:
         if not friend_graph.has_edge(f1, f2):
             friend_graph.add_edge(f1, f2, weight = 0) 
         friend_graph[f1][f2]['weight'] += 1
@@ -90,7 +90,7 @@ class Friend:
         self.likes = []
 
     def get_likes(self):
-        likes = g.get_connections(self.uid, 'music')['data']
+        likes = g.get_connections(self.uid, 'likes')['data']
         for l in likes:
             self.likes.append(Page(l['id'], l['name']))
         return self.likes
@@ -104,11 +104,13 @@ class Friend:
         
 if __name__ == '__main__':
     data = get_friends()
-    print [line for line in data]
+    for line in data:
+        print line
     friends = make_friends(data)
     add_friend_nodes(friends)
     add_likes(friends)
-    bp.color(bp_graph)
+    #bp.color(bp_graph)
     get_friend_graph(bp_graph)
-    nx.draw(friend_graph)
+    nx.draw_random(friend_graph)
+    print sorted(friend_graph.edges(data=True), key= lambda x: x[2].get('weight', 1))
     plt.show()
