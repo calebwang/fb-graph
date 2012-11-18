@@ -112,6 +112,7 @@ if __name__ == '__main__':
     #bp.color(bp_graph)
     get_friend_graph(bp_graph)
     nx.draw_random(friend_graph)
+    print '\n'
     for edge in sorted(friend_graph.edges(data=True), key= lambda x: -1*x[2].get('weight', 1)):
         print edge
     plt.show()
