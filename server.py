@@ -2,7 +2,7 @@ import bottle
 import urllib
 import facebook
 import crawl
-
+import os
 
 app_id = '409886029080423'
 app_secret = '65045404878c33bac7b538f6f6dbeab9'
@@ -53,6 +53,7 @@ def home():
 @app.route('/logout')
 def logout():
     bottle.response.delete_cookie('access_token') 
+    os.remove('graph.png')
 
 @app.route('/loading')
 def loading():

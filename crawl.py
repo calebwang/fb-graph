@@ -40,8 +40,8 @@ class FBGraph:
             print f.name
             likes = f.get_likes() 
             print [l.name for l in likes]
-            #if len(likes) == 0:
-            #    bp_graph.remove_node(f.name)
+            if len(likes) == 0:
+                self.bp_graph.remove_node(f.name)
             for l in likes:
                 if not self.bp_graph.has_node(l.name):
                     self.bp_graph.add_node(l.name, uid = l.uid, bipartite = 1)
@@ -63,6 +63,11 @@ class FBGraph:
                 self.friend_graph.add_edge(f1, f2, weight = 0) 
             self.friend_graph[f1][f2]['weight'] += 1
 
+    def prune_friends(self):
+        for f in self.friend_graph.nodes():
+            if not self.friend_graph.neighbors(f):
+                self.friend_graph.remove_node(f) 
+
     def run(self):
         data = self.get_friends()
         for line in data:
@@ -71,12 +76,13 @@ class FBGraph:
         self.add_friend_nodes(friends)
         self.add_likes(friends)
         friend_graph = self.get_friend_graph()
+        self.prune_friends()
         print '\n'
         print nx.clustering(friend_graph)
         print '\n'
         for edge in sorted(friend_graph.edges(data=True), key= lambda x: -1*x[2].get('weight', 1)):
             print edge
-        nx.draw_random(friend_graph)
+        nx.draw(friend_graph)
         plt.savefig('graph.png')
 
 class Page:
