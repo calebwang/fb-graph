@@ -39,7 +39,7 @@ def home():
     access_token = bottle.request.get_cookie('access_token')
     f = crawl.FBGraph(access_token)
     f.run()
-    return bottle.static_file('graph.png') 
+    return bottle.static_file('graph.png', '.') 
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = '8080', debug = True)

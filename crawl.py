@@ -77,7 +77,7 @@ class FBGraph:
         for edge in sorted(friend_graph.edges(data=True), key= lambda x: -1*x[2].get('weight', 1)):
             print edge
         nx.draw_random(friend_graph)
-        plt.show()
+        plt.savefig('graph.png')
 
 class Page:
 
@@ -114,8 +114,6 @@ def main():
     for edge in sorted(friend_graph.edges(data=True), key= lambda x: -1*x[2].get('weight', 1)):
         print edge
     nx.draw_random(friend_graph)
-    plt.show()
-    plt.savefig('graph.png')
 
 if __name__ == '__main__':
     main()
