@@ -1,6 +1,7 @@
 import bottle
 import urllib
 import facebook
+import crawl
 
 
 app_id = '409886029080423'
@@ -36,8 +37,9 @@ def callback():
 @app.route('/home')
 def home():
     access_token = bottle.request.get_cookie('access_token')
-    f = facebook.GraphAPI(access_token)
-    return f.get_connections('me', 'friends')
+    f = crawl.FBGraph(access_token)
+    f.run()
+    return bottle.static_file('graph.png') 
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = '8080', debug = True)

@@ -115,8 +115,7 @@ def main():
         print edge
     nx.draw_random(friend_graph)
     plt.show()
-    plt.savefig('plot.png')
+    plt.savefig('graph.png')
 
-      
 if __name__ == '__main__':
     main()
